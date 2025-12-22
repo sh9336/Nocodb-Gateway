@@ -20,7 +20,7 @@ If you've ever built a client application on top of NocoDB, you've likely run in
 - Schema changes break your application
 - Every client needs to implement auth and filtering logic separately
 
-**😰 Developer Experience**
+**📝 Developer Experience**
 - Cryptic table IDs like `m7rl42lk4m0nq27` instead of readable names
 - Repeated authentication code across multiple frontends
 - No central place to manage access control
