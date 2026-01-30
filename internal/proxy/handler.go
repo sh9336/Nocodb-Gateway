@@ -13,17 +13,19 @@ import (
 type ProxyHandler struct {
 	NocoDBURL      string
 	NocoDBToken    string
+	NocoDBBaseID   string
 	Meta           *MetaCache
 	ResolvedConfig *config.ResolvedConfig
 	Validator      *Validator
 }
 
 // NewProxyHandler creates a new proxy handler
-func NewProxyHandler(nocoDBURL, nocoDBToken string, meta *MetaCache) *ProxyHandler {
+func NewProxyHandler(nocoDBURL, nocoDBToken, nocoDBBaseID string, meta *MetaCache) *ProxyHandler {
 	return &ProxyHandler{
-		NocoDBURL:   nocoDBURL,
-		NocoDBToken: nocoDBToken,
-		Meta:        meta,
+		NocoDBURL:    nocoDBURL,
+		NocoDBToken:  nocoDBToken,
+		NocoDBBaseID: nocoDBBaseID,
+		Meta:         meta,
 	}
 }
 
@@ -31,6 +33,9 @@ func NewProxyHandler(nocoDBURL, nocoDBToken string, meta *MetaCache) *ProxyHandl
 func (p *ProxyHandler) SetResolvedConfig(config *config.ResolvedConfig) {
 	p.ResolvedConfig = config
 	p.Validator = NewValidator(config, p.Meta)
+	if config.BaseID != "" {
+		p.NocoDBBaseID = config.BaseID
+	}
 	log.Printf("[PROXY] Resolved configuration set with %d tables", len(config.Tables))
 }
 
@@ -94,7 +99,26 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Construct the target URL
-	targetURL := p.NocoDBURL + resolvedPath
+	targetURL := p.NocoDBURL
+	if !strings.HasSuffix(targetURL, "/") {
+		targetURL += "/"
+	}
+
+	// Detect NocoDB API structure and build path accordingly
+	// Legacy NocoDB (v1) requires the BaseID in the data path: /api/v1/db/data/v1/{baseId}/{tableName}
+	// Modern NocoDB (v2+) uses table IDs directly if pointing to the tables endpoint: /api/v2/tables/{tableId}/records
+	if strings.Contains(targetURL, "/data/v1/") {
+		log.Printf("[PROXY] Legacy NocoDB structure detected (/data/v1/), injecting BaseID")
+		baseID := p.NocoDBBaseID
+		if baseID == "" && p.Meta != nil {
+			baseID = p.Meta.BaseID
+		}
+		targetURL += baseID + "/" + resolvedPath
+	} else {
+		log.Printf("[PROXY] Modern NocoDB structure detected (Direct Access), appending resolved path")
+		targetURL += resolvedPath
+	}
+
 	if r.URL.RawQuery != "" {
 		targetURL += "?" + r.URL.RawQuery
 	}

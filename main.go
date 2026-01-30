@@ -140,7 +140,7 @@ func main() {
 	}
 
 	// Create proxy handler
-	proxyHandler := proxy.NewProxyHandler(nocoDBURL, cfg.NocoDBToken, metaCache)
+	proxyHandler := proxy.NewProxyHandler(nocoDBURL, cfg.NocoDBToken, cfg.NocoDBBaseID, metaCache)
 
 	// Set resolved configuration if available (config-driven mode)
 	if resolvedConfig != nil {

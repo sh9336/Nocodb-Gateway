@@ -39,7 +39,7 @@ type MetaCache struct {
 	fieldsByTable     map[string]map[string]string // table ID -> (lowercase field name -> field ID)
 	linkFieldsByTable map[string]map[string]string // table ID -> (lowercase link field name -> field ID)
 	metaBaseURL       string                       // e.g. http://100.103.198.65:8090/api/v2/
-	baseID            string                       // NocoDB base ID
+	BaseID            string                       // NocoDB base ID
 	token             string                       // NOCODB_TOKEN
 	httpClient        *http.Client
 	lastLoadedAt      time.Time
@@ -53,7 +53,7 @@ func NewMetaCache(metaBaseURL, baseID, token string) *MetaCache {
 		fieldsByTable:     make(map[string]map[string]string),
 		linkFieldsByTable: make(map[string]map[string]string),
 		metaBaseURL:       strings.TrimRight(metaBaseURL, "/") + "/",
-		baseID:            baseID,
+		BaseID:            baseID,
 		token:             token,
 		httpClient:        &http.Client{Timeout: 10 * time.Second},
 		refreshInterval:   10 * time.Minute,
@@ -62,8 +62,8 @@ func NewMetaCache(metaBaseURL, baseID, token string) *MetaCache {
 
 // fetchTableDetails fetches detailed metadata for a specific table including fields
 func (m *MetaCache) fetchTableDetails(tableID string) (*TableMeta, error) {
-	// Construct v3 API URL for table details
-	url := fmt.Sprintf("%sapi/v3/meta/bases/%s/tables/%s", strings.TrimSuffix(m.metaBaseURL, "api/v2/"), m.baseID, tableID)
+	// Construct v2 API URL for table details
+	url := fmt.Sprintf("%smeta/tables/%s", m.metaBaseURL, tableID)
 
 	// Create request
 	req, err := http.NewRequest("GET", url, nil)
@@ -106,7 +106,7 @@ func (m *MetaCache) Refresh() error {
 	log.Printf("[META] Fetching table metadata from NocoDB...")
 
 	// Build the metadata API URL
-	url := fmt.Sprintf("%smeta/bases/%s/tables", m.metaBaseURL, m.baseID)
+	url := fmt.Sprintf("%smeta/bases/%s/tables", m.metaBaseURL, m.BaseID)
 	log.Printf("[META] Metadata URL: %s", url)
 
 	// Create request
