@@ -74,8 +74,8 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					log.Printf("[META] Resolved table '%s' -> '%s'", tableName, tableID)
 
 					// Check if this is a link request and resolve link field alias
-					if len(parts) == 2 {
-						remainingPath := parts[1]
+					if len(parts) > 1 {
+						remainingPath := strings.Join(parts[1:], "/")
 						resolvedRemainingPath, err := p.resolveLinkFieldInPath(tableID, tableName, remainingPath)
 						if err != nil {
 							log.Printf("[PROXY ERROR] Link field resolution failed: %v", err)

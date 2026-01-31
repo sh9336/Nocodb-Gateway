@@ -26,3 +26,8 @@ go.work
 *.swp
 *.swo
 *~
+
+bugs.md
+
+# Admin UI
+admin-ui/

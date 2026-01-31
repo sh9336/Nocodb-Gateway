@@ -1,23 +1,29 @@
 # Generic NocoDB Proxy Configuration
 # This file defines the schema-driven configuration for the proxy
 nocodb:
-  base_id: "pyply12zyphcmmm"  # Your base ID
+  base_id: "ptteoble0x5644w"  # Your base ID
 
 tables:
-  team_members:
-    name: "Team Members"  # Must match exactly as in NocoDB
-    id: "mrumjq78h7hs1bn"  # Explicitly set the table ID
-    operations: [read, create, update, delete, link]
+  customers:
+    name: "Customers"  # Must match exactly as in NocoDB
+    id: "mti3vlhc9gbtbu0"  # Explicitly set the table ID
+    operations: [read, create, update, delete]
 
-  objectives:
-    name: "Objectives"  # Must match exactly as in NocoDB
-    id: "ml2x0cn01o484zu"  # Explicitly set the table ID
-    operations: [read, create, update, delete, link]
+  devices:
+    name: "Devices"  # Must match exactly as in NocoDB
+    id: "mapitmsn1xplcps"  # Explicitly set the table ID
+    operations: [read, create, update, delete]
 
-  tasks:
-    name: "Tasks"  # Must match exactly as in NocoDB
-    id: "mv3bf1o9hbh78ey"  # Explicitly set the table ID
-    operations: [read, create, update, delete, link]
+  amc:
+    name: "AMC"  # Must match exactly as in NocoDB
+    id: "msobv13v7s1h4nw"  # Explicitly set the table ID
+    operations: [read, create, update, delete]
+
+
+  credentials:
+    name: "Credentials"  # Must match exactly as in NocoDB
+    id: "mvg180heeisqpfg"  # Explicitly set the table ID
+    operations: [read, create, update, delete]
   # products:
   #   name: "Products"
   #   operations: [read]
